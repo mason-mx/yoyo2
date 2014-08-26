@@ -72,6 +72,33 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 		}
 		break;
 	case 4:
+		{
+			switch(hit)
+			{
+			case 0:
+			case 1:
+				if(pcombos.weight < 8)
+				{
+					pcombos.weight *= 2;
+				}
+				else if(pcombos.weight >= 8)
+				{
+					pcombos.weight *= 1.5;
+				}
+				else if(pcombos.weight >= 1000)
+				{
+					pcombos.weight *= 1.3;
+				}
+				break;
+			case 2:
+			case 3:
+				pcombos.weight  = 1.0;
+				break;
+			default:
+				break;
+			}
+		}
+		break;
 	case 5:
 		{
 			switch(hit)
@@ -133,7 +160,7 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 	{
 		numbers[pcombos.combo_array[j]] += pcombos.weight;
 	}
-	printf("%d hit %d | weight:%d\n", combo_n, hit, pcombos.weight);
+	printf("%d hit %d | weight:%lf\n", combo_n, hit, pcombos.weight);
 	return 0;
 }
 
@@ -181,7 +208,7 @@ COMBO_YOYO * initCombo()
 		}
 		combos[i].combo_n = j;
 		combos[i].combo_array = (int *)malloc(sizeof(int)*j);
-		combos[i].weight = 1;
+		combos[i].weight = 1.0;
 		l ++;
     }
 	for(i = 0;i<NUMBER_TOTAL;i++){//初始化数组
@@ -212,22 +239,50 @@ COMBO_YOYO * initCombo()
 	return combos;
 }
 
-int staCombos(int *parray, int *pEnable, COMBO_YOYO *pcombos, int n, ULONG *numbers)
+int staCombos(int *parray, int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int n, ULONG *numbers)
 {
 	int hit = 0;
+	bool skip = false;
 	
 	for(int i = 0;i<n;i++)
 	{
 		if(pEnable[pcombos[i].combo_n - MIN] == 0)
 		{
-			printf("[%3d]",i+1);
-			printf("skip this\r\n", pcombos[i].combo_n);
+			//printf("[%3d]",i+1);
+			//printf("skip this\r\n");
 			continue;
 		}
 		printf("[%3d:",i+1);
 		for(int k = 0;k<pcombos[i].combo_n;k++)
 		{
-			printf("%d ", pcombos[i].combo_array[k]);
+			printf(" %d", pcombos[i].combo_array[k]);
+			for(int l = 0;l<NUMBER_TOTAL;l++)
+			{
+				if((pNumber[l] == 0) && (l== pcombos[i].combo_array[k]))
+				{
+					//printf("%d ", l);
+					skip = true;
+					break;
+				}
+			}
+		}
+		printf("]");
+		if(skip)
+		{
+			skip = false;
+			printf("skip this\r\n");
+			continue;
+		}
+		printf(" [");
+		for(int j = 0;j<3;j ++)
+		{
+			printf(" %d", parray[j]);
+		}
+		printf("]");
+		for(int k = 0;k<pcombos[i].combo_n;k++)
+		{
+			//printf("%d ", pcombos[i].combo_array[k]);
+			
 			for(int j = 0;j<3;j ++)
 			{
 				if(j == 1)
@@ -244,12 +299,23 @@ int staCombos(int *parray, int *pEnable, COMBO_YOYO *pcombos, int n, ULONG *numb
 				}
 			}
 		}
-		printf("]");
+		//printf("]");
 		weightNumber(pcombos[i], numbers, hit);
 		hit = 0;
     }
 	printf("======Statics======\r\n");
 	for(int i = 0;i<NUMBER_TOTAL;i++){
+		printf("%d : %d\r\n",i,numbers[i]);
+    }
+	printf("======4/5======\r\n");
+	for(int i = 0;i<NUMBER_TOTAL;i++){
+		if(numbers[i] > 100)
+		{
+			if(50 <= (numbers[i] - (numbers[i]/100)*100))
+				numbers[i] = (numbers[i]/100 + 1) * 100;
+			else
+				numbers[i] = (numbers[i]/100) * 100;
+		}
 		printf("%d : %d\r\n",i,numbers[i]);
     }
 	return 0;
@@ -401,9 +467,9 @@ int saveLottery(int* pArray)
     //打开存储文件
 	if ((fp=fopen("lotteries.txt","r"))==NULL)
 	{
-		printf("Can not open the file");
+		//printf("Can not open the file");
 		//getch();
-		return 0;
+		//return 0;
 	} 
 	else
 	{

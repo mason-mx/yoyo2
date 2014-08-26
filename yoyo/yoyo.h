@@ -3,7 +3,7 @@
 #include "resource.h"
 
 #define NUMBER_TOTAL 10
-#define LOTTERIES_ROW 10
+#define LOTTERIES_ROW 20
 #define LOTTERIES_COL 3
 
 #define HISTORY_PATH 10
@@ -18,5 +18,5 @@ struct COMBO_YOYO
 {
 	int combo_n;
 	int *combo_array;
-	int weight;
+	double weight;
 };

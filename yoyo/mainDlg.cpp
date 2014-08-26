@@ -14,7 +14,7 @@ static int ShowResult(HWND hDlg)
 {
 	TCHAR pRel[NUMBER_TOTAL][RESULT_PATH] = {0};
 	int lotteries[LOTTERIES_ROW][3] = {0};
-	int total = 0, pEnable[MAX-MIN+1] = {0};
+	int j = NUMBER_TOTAL, total = 0, pEnable[MAX-MIN+1] = {0}, pNumber[NUMBER_TOTAL] = {0};
 
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST2);
 
@@ -29,7 +29,7 @@ static int ShowResult(HWND hDlg)
 	}
 
 	for(int i = 0;i<(MAX-MIN+1);i++){
-		HWND hCheck = GetDlgItem(hDlg, IDC_CHECK3 + i);
+		HWND hCheck = GetDlgItem(hDlg, IDC_CHECK3 + MIN - 3 + i);
 		int nChecked = SendMessage(hCheck, BM_GETCHECK, 0, 0);
 		if(nChecked == BST_CHECKED)
 		{
@@ -45,6 +45,16 @@ static int ShowResult(HWND hDlg)
 		return 0;
 	}
 
+	for(int i = 0;i<NUMBER_TOTAL;i++){
+		HWND hCheck = GetDlgItem(hDlg, IDC_CHECK1 + i);
+		int nChecked = SendMessage(hCheck, BM_GETCHECK, 0, 0);
+		if(nChecked == BST_CHECKED)
+		{
+			pNumber[i] = 1;
+		}
+		//printf("%d : %d\r\n",IDC_CHECK3 + i,pEnable[i]);
+    }	
+
 	int n = getCombos();
 
 	//YOYO data
@@ -56,15 +66,24 @@ static int ShowResult(HWND hDlg)
 	COMBO_YOYO *combos = initCombo();
 	
 	//int parray[10][3] = {{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8}};
-	for(int i = 0; i < rel;i++)
+	for(int i = (rel - 1); i >= 0;i--)
 	{
 		//staCombos(parray[i], pEnable, combos, n, numbers);
-		staCombos(lotteries[i], pEnable, combos, n, numbers);		
+		for(int i = 0;i<NUMBER_TOTAL;i++){
+			numbers[i] = 0;
+		}
+		staCombos(lotteries[i], pEnable, pNumber, combos, n, numbers);	
+		
 	}
-	for(int i = 0;i<NUMBER_TOTAL;i++)
+
+	while(j >= 0)
 	{
-		wsprintf(pRel[i], L"%d : %d", i, numbers[i]);
-		SendMessage( hListBox, LB_INSERTSTRING, i, (LPARAM)pRel[i]);
+		j --;
+		if(pNumber[j] == 1)
+		{
+			wsprintf(pRel[j], L"%d : %d", j, numbers[j]);
+			SendMessage( hListBox, LB_INSERTSTRING, 0, (LPARAM)pRel[j]);
+		}
 	}
 
 	for(int i = 0; i < n;i++)
@@ -122,7 +141,13 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 					if (NewPosY < 0) NewPosY = 0;  
 					SetWindowPos(hDlg, 0, NewPosX, NewPosY,  
 						0, 0, SWP_NOZORDER | SWP_NOSIZE);  
-				}  
+				}
+				HWND hCheck = GetDlgItem(hDlg, IDC_CHECK4);
+				SendMessage(hCheck, BM_SETCHECK, 1, 0);
+				for(int i = 0;i<10;i++){
+					HWND hCheck = GetDlgItem(hDlg, IDC_CHECK1 + i);
+					SendMessage(hCheck, BM_SETCHECK, 1, 0);
+				}
 				//combos = initCombo();
 				HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
 				ShowLotteryHistory(hListBox);
