@@ -14,6 +14,7 @@
 #define IDR_MAINFRAME                   128
 #define IDD_MAINDLG                     129
 #define IDD_ADDHIS                      131
+#define IDD_SELDLG                      132
 #define IDC_ADDHIS                      1004
 #define IDC_CHECK3                      1005
 #define IDC_CHECK4                      1006
@@ -40,6 +41,8 @@
 #define IDC_CHECK14                     1023
 #define IDC_CHECK15                     1024
 #define IDC_CHECK16                     1025
+#define IDC_YOYO1                       1026
+#define IDC_YOYO2                       1027
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -47,9 +50,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        132
+#define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1017
+#define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

@@ -64,17 +64,9 @@ static int ShowResult(HWND hDlg)
 	}
 
 	COMBO_YOYO *combos = initCombo();
-	
-	//int parray[10][3] = {{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8},{0,5,8}};
-	for(int i = (rel - 1); i >= 0;i--)
-	{
-		//staCombos(parray[i], pEnable, combos, n, numbers);
-		for(int i = 0;i<NUMBER_TOTAL;i++){
-			numbers[i] = 0;
-		}
-		staCombos(lotteries[i], pEnable, pNumber, combos, n, numbers);	
-		
-	}
+
+	staWeight( pEnable, pNumber, combos, n, numbers);
+
 
 	while(j >= 0)
 	{
@@ -152,6 +144,7 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
 				ShowLotteryHistory(hListBox);
 			}
+			prepareWeight(4);
 			return (INT_PTR)TRUE;
 		case WM_COMMAND:
 			/*if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)

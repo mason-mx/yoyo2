@@ -2,7 +2,70 @@
 #include "stdio.h"
 #include "yoyo.h"
 
+extern int selectedLottery;
+
 static int *dst_array/*=(int *)malloc(sizeof(int)*8)*/,top=0,count=0;//中间数组，存放中间求解过程，count计数所有的组合个数
+
+//support integer
+int parseChartoArrayEx(int* des, const char* src)
+{
+	int i, ret = 0, len = strlen(src);
+	char tmp[4] = {0};
+	int j = 0;
+	for(i=0; i<len; i++)
+	{
+		if(' ' == src[i])
+		{
+			des[ret++] = atoi(tmp);
+			j = 0;
+			memset(tmp, 0, 4);
+		}
+		else
+		{
+			tmp[j++] = src[i];
+		}
+		if(i == len-1)
+		{
+			des[ret++] = atoi(tmp);
+		}
+	}
+	return ret;
+}
+
+int parseWeight(double *pArray, bool cal)//, TCHAR pLotteries[LOTTERIES_ROW][HISTORY_PATH])
+{
+    FILE *fp1;
+    char buf[HISTORY_PATH];
+	int i = 0;
+	char filename[MAX_PATH];
+
+	sprintf(filename, "%d_w.txt", selectedLottery);
+
+	if( (fp1=fopen(filename,"r"))==NULL )
+	{
+		printf("Cannot open the file");
+		return 0;
+	}
+
+    while(!feof(fp1))       //当文件指针fp1指向文件末尾时，feof返回0，否则返回1，该句作用是只要未到末尾则进入循环
+    {
+		//fread(&pArray[i],sizeof(float),1,fp1);
+        //memset(buf, 0, HISTORY_PATH);       //buf字符串清0
+        //fgets(buf, HISTORY_PATH, fp1);      //从fp1文件当前指针读取一行内容到buf
+		//if(2 > strlen(buf)) break;
+		//if(pLotteries != NULL)
+		//	MultiByteToWideChar(CP_THREAD_ACP,MB_USEGLYPHCHARS,buf,strlen(buf),pLotteries[i],HISTORY_PATH);   
+        //parseStringtoArray(pArray[i], buf);
+		//pArray[i] = atof(buf);
+		fscanf(fp1, "%lf", &pArray[i]);
+		if(i == PRINT_N) printf("READ from <<< weight:%lf\n", pArray[i]);
+		i ++;
+    }
+
+    fclose(fp1);
+
+    return i;
+}
 
 static bool hasSameinArray(int n,int *parray, int index, int size)
 {
@@ -164,12 +227,8 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 	default:
 		break;
 
-	}
-	for(int j = 0;j<combo_n;j ++)
-	{
-		numbers[pcombos.combo_array[j]] += pcombos.weight;
-	}
-	printf("%d hit %d | weight:%lf\n", combo_n, hit, pcombos.weight);
+	}	
+	
 	return 0;
 }
 
@@ -192,6 +251,7 @@ COMBO_YOYO * initCombo()
 	int i, *parray;
 	int l = 0, j = MIN, *combo_n = (int *)malloc(sizeof(int)*(MAX-MIN+1));
 	int icombos = 0, temp = 0;
+	double pWeight[COMBOS_N] = {0.0};
 
 	top=0;
 	count=0;
@@ -206,9 +266,13 @@ COMBO_YOYO * initCombo()
 		icombos += temp;
 	}
 
+	//
+	parseWeight(pWeight, false);
+	
 	//Do combine to assign destnation array;
     COMBO_YOYO *combos=(COMBO_YOYO *)malloc(sizeof(COMBO_YOYO)*icombos);
-	for(i = 0;i<icombos;i++){//初始化数组
+	for(i = 0;i<icombos;i++)
+	{//初始化数组
 		if(combo_n[j-MIN] == l)
 		{
 			j ++;
@@ -217,9 +281,10 @@ COMBO_YOYO * initCombo()
 		}
 		combos[i].combo_n = j;
 		combos[i].combo_array = (int *)malloc(sizeof(int)*j);
-		combos[i].weight = 1.0;
+		combos[i].weight = pWeight[i];
 		l ++;
     }
+	
 	for(i = 0;i<NUMBER_TOTAL;i++){//初始化数组
         parray[i] = i;
     }
@@ -252,7 +317,19 @@ int staCombos(int *parray, int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int 
 {
 	int hit = 0;
 	bool skip = false;
-	
+	char filename[MAX_PATH];
+
+	sprintf(filename, "%d_w.txt", selectedLottery);
+
+	FILE *fp;
+
+   	if((fp=fopen(filename,"w"))==NULL)
+	{
+		printf("Can not write the file");
+		//getch();
+		return 0;
+	} 
+
 	for(int i = 0;i<n;i++)
 	{
 		if(pEnable[pcombos[i].combo_n - MIN] == 0)
@@ -261,10 +338,10 @@ int staCombos(int *parray, int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int 
 			//printf("skip this\r\n");
 			continue;
 		}
-		printf("[%3d:",i+1);
+		if((i == PRINT_N) || (PRINT_N == -1)) printf("[%3d:",i+1);
 		for(int k = 0;k<pcombos[i].combo_n;k++)
 		{
-			printf(" %d", pcombos[i].combo_array[k]);
+			if((i == PRINT_N) || (PRINT_N == -1)) printf(" %d", pcombos[i].combo_array[k]);
 			for(int l = 0;l<NUMBER_TOTAL;l++)
 			{
 				if((pNumber[l] == 0) && (l== pcombos[i].combo_array[k]))
@@ -275,19 +352,22 @@ int staCombos(int *parray, int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int 
 				}
 			}
 		}
-		printf("]");
+		if((i == PRINT_N) || (PRINT_N == -1)) printf("]");
 		if(skip)
 		{
 			skip = false;
 			printf("skip this\r\n");
 			continue;
 		}
-		printf(" [");
-		for(int j = 0;j<3;j ++)
+		if((i == PRINT_N) || (PRINT_N == -1))
 		{
-			printf(" %d", parray[j]);
+			printf(" [");
+			for(int j = 0;j<3;j ++)
+			{
+				printf(" %d", parray[j]);
+			}
+			printf("]");
 		}
-		printf("]");
 		for(int k = 0;k<pcombos[i].combo_n;k++)
 		{
 			//printf("%d ", pcombos[i].combo_array[k]);
@@ -310,8 +390,64 @@ int staCombos(int *parray, int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int 
 		}
 		//printf("]");
 		weightNumber(pcombos[i], numbers, hit);
+		if((i == PRINT_N) || (PRINT_N == -1)) printf("%d hit %d | weight:%lf\n", pcombos[i].combo_n, hit, pcombos[i].weight);
+		if(i == PRINT_N) printf("WRITE to >>> weight:%lf\n", pcombos[i].weight);
+		fprintf(fp,"%f",pcombos[i].weight);
+		fprintf(fp,"\n");
 		hit = 0;
     }
+	fclose(fp);
+	return 0;
+}
+
+int staWeight(int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int n, ULONG *numbers)
+{
+	int hit = 0;
+	bool skip = false;
+
+	//double pWeight[COMBOS_N] = {0.0};
+	//parseWeight(pWeight, true);
+
+	for(int i = 0;i<COMBOS_N;i++)
+	{
+		//printf("%d  weight:%lf\n", i+1, pWeight[i]);
+	}
+
+	for(int i = 0;i<n;i++)
+	{
+		if(pEnable[pcombos[i].combo_n - MIN] == 0)
+		{
+			continue;
+		}
+		if((i == PRINT_N) || (PRINT_N == -1)) printf("[%3d:",i+1);
+		for(int k = 0;k<pcombos[i].combo_n;k++)
+		{
+			if((i == PRINT_N) || (PRINT_N == -1)) printf(" %d", pcombos[i].combo_array[k]);
+			for(int l = 0;l<NUMBER_TOTAL;l++)
+			{
+				if((pNumber[l] == 0) && (l== pcombos[i].combo_array[k]))
+				{
+					//printf("%d ", l);
+					skip = true;
+					break;
+				}
+			}
+		}
+		if((i == PRINT_N) || (PRINT_N == -1)) printf("]");
+		if(skip)
+		{
+			skip = false;
+			printf("skip this\r\n");
+			continue;
+		}
+		
+		if((i == PRINT_N) || (PRINT_N == -1)) printf("weight:%lf\n", pcombos[i].weight);
+		for(int j = 0;j<pcombos[i].combo_n;j ++)
+		{
+			numbers[pcombos[i].combo_array[j]] += pcombos[i].weight;
+		}
+    }
+
 	printf("======Statics======\r\n");
 	for(int i = 0;i<NUMBER_TOTAL;i++){
 		printf("%d : %d\r\n",i,numbers[i]);
@@ -376,12 +512,14 @@ int parseLottery(int pArray[LOTTERIES_ROW][3], TCHAR pLotteries[LOTTERIES_ROW][H
 {
     FILE *fp1;
     char buf[HISTORY_PATH];
+	char filename[MAX_PATH];
 	int i = 0;
 
-    if( (fp1=fopen("lotteries.txt","r"))==NULL )
+	sprintf(filename, "lotteries%d.txt", selectedLottery);
+    if( (fp1=fopen(filename,"r"))==NULL )
     {
         printf("Cannot open the file");
-		if ((fp1=fopen("lotteries.txt","w+"))==NULL)
+		if ((fp1=fopen(filename,"w+"))==NULL)
 		{
 			printf("create the file failed.");
 			//getch();
@@ -469,12 +607,15 @@ int saveLottery(int* pArray)
 	char buff1[HISTORY_NUM][HISTORY_PATH];
 	int i=0;
 	char buf[HISTORY_PATH];
+	char filename[MAX_PATH];
+
+	sprintf(filename, "lotteries%d.txt", selectedLottery);
 
 	buildString(buf, pArray);
 	//printf(buf);
 
     //打开存储文件
-	if ((fp=fopen("lotteries.txt","r"))==NULL)
+	if ((fp=fopen(filename,"r"))==NULL)
 	{
 		//printf("Can not open the file");
 		//getch();
@@ -492,7 +633,7 @@ int saveLottery(int* pArray)
 	fclose(fp);
 
     //打开存储文件,将排好序的数据重新写入文件中
-	if ((fp=fopen("lotteries.txt","w"))==NULL)
+	if ((fp=fopen(filename,"w"))==NULL)
 	{
 		printf("Can not write the file");
 		//getch();
@@ -513,5 +654,47 @@ int saveLottery(int* pArray)
 		}
 	}	
 	fclose(fp);
+	return 1;
+}
+
+int prepareWeight(int combo_n)
+{
+
+	FILE *fp;
+	int i=0;
+	double def = 1.0;
+	char filename[MAX_PATH];
+
+	sprintf(filename, "%d_w.txt", selectedLottery);
+
+    //打开存储文件
+	if ((fp=fopen(filename,"r"))==NULL)
+	{
+		if ((fp=fopen(filename,"w"))==NULL)
+		{
+			printf("Can not write the file");
+			//getch();
+			return 0;
+		} 
+		else
+		{   
+			for(i=0;i<COMBOS_N;i++)
+			{
+				//char scorestr[10];
+				//itoa(i,scorestr,10);
+				//fscanf(fp,"%lf\n",i);
+				fprintf(fp,"%f",def);
+				fprintf(fp,"\n");
+			}
+			
+		}	
+		fclose(fp);
+	} 
+	else
+	{
+		//
+	}
+	fclose(fp);
+	
 	return 1;
 }

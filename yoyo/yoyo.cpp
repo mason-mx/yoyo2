@@ -12,12 +12,13 @@
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+int selectedLottery = 0;
 
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK	MainDialogProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK	SelDialogProc(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
@@ -60,7 +61,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	MSG msg;
 	BOOL ret;
 
-	hDlg = CreateDialogParam(hInst, MAKEINTRESOURCE(IDD_MAINDLG), 0, MainDialogProc, 0);
+	hDlg = CreateDialogParam(hInst, MAKEINTRESOURCE(IDD_SELDLG), 0, SelDialogProc, 0);
 	ShowWindow(hDlg, nCmdShow);
 
 	while((ret = GetMessage(&msg, 0, 0, 0)) != 0) {

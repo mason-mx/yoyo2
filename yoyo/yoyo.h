@@ -11,6 +11,10 @@
 
 #define RESULT_PATH 20
 
+#define COMBOS_N 957
+
+#define PRINT_N -1 //307
+
 #define MIN 3
 #define MAX 8
 
