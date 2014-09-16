@@ -15,25 +15,25 @@ INT_PTR CALLBACK SelDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 		case WM_INITDIALOG:
 			{
-				RECT rectChild, rectParent;  
-				int DlgWidth, DlgHeight;    // 以像素为单位的对话框宽度和高度  
-				int NewPosX, NewPosY;  
+				//RECT rectChild, rectParent;  
+				//int DlgWidth, DlgHeight;    // 以像素为单位的对话框宽度和高度  
+				//int NewPosX, NewPosY;  
 	  
-				// 设法使“关于”对话框居中显示  
-				if (GetWindowRect(hDlg, &rectChild))   
-				{  
-					GetClientRect(GetParent(hDlg), &rectParent);  
-					DlgWidth    = rectChild.right - rectChild.left;  
-					DlgHeight   = rectChild.bottom - rectChild.top ;  
-					NewPosX     = (DlgWidth) / 2;  
-					NewPosY     = (DlgHeight) / 2;  
-	                  
-					// 如果“关于”框比实际屏幕大  
-					if (NewPosX < 0) NewPosX = 0;  
-					if (NewPosY < 0) NewPosY = 0;  
-					SetWindowPos(hDlg, 0, NewPosX, NewPosY,  
-						0, 0, SWP_NOZORDER | SWP_NOSIZE);  
-				}
+				//// 设法使“关于”对话框居中显示  
+				//if (GetWindowRect(hDlg, &rectChild))   
+				//{  
+				//	GetClientRect(GetParent(hDlg), &rectParent);  
+				//	DlgWidth    = rectChild.right - rectChild.left;  
+				//	DlgHeight   = rectChild.bottom - rectChild.top ;  
+				//	NewPosX     = (DlgWidth) / 2;  
+				//	NewPosY     = (DlgHeight) / 2;  
+	   //               
+				//	// 如果“关于”框比实际屏幕大  
+				//	if (NewPosX < 0) NewPosX = 0;  
+				//	if (NewPosY < 0) NewPosY = 0;  
+				//	SetWindowPos(hDlg, 0, NewPosX, NewPosY,  
+				//		0, 0, SWP_NOZORDER | SWP_NOSIZE);  
+				//}
 			}
 			return (INT_PTR)TRUE;
 		case WM_COMMAND:
@@ -70,7 +70,7 @@ INT_PTR CALLBACK SelDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			//MB_ICONQUESTION | MB_YESNO) == IDYES)
 			{
 				_CrtDumpMemoryLeaks();
-			DestroyWindow(hDlg);
+				DestroyWindow(hDlg);
 			}
 			return TRUE;
 		case WM_CHAR:

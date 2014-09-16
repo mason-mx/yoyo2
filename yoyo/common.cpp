@@ -139,14 +139,14 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 			switch(hit)
 			{
 			case 0:
-				if(pcombos.weight < 1000)
-				{
+				//if(pcombos.weight < 1000)
+				//{
 					pcombos.weight *= 2;
-				}
-				else if(pcombos.weight >= 1000)
-				{
-					pcombos.weight *= 1.3;
-				}
+				//}
+				//else if(pcombos.weight >= 1000)
+				//{
+				//	pcombos.weight *= 1.3;
+				//}
 				break;
 			case 1:
 				if(pcombos.weight < 8)
@@ -688,6 +688,34 @@ int prepareWeight(int combo_n)
 			}
 			
 		}	
+		fclose(fp);
+	} 
+	else
+	{
+		//
+	}
+	fclose(fp);
+	
+	return 1;
+}
+
+int prepareLotteries()
+{
+
+	FILE *fp;
+	char filename[MAX_PATH];
+
+	sprintf(filename, "lotteries%d.txt", selectedLottery);
+
+    //打开存储文件
+	if ((fp=fopen(filename,"r"))==NULL)
+	{
+		if ((fp=fopen(filename,"w"))==NULL)
+		{
+			printf("Can not write the file");
+			//getch();
+			return 0;
+		}
 		fclose(fp);
 	} 
 	else

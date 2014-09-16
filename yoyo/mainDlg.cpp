@@ -5,8 +5,7 @@
 #include <crtdbg.h>
 
 extern HINSTANCE hInst;
-
-//COMBO_YOYO *combos;
+extern int selectedLottery;
 
 INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -105,7 +104,14 @@ static void ShowLotteryHistory(HWND hListBox)
 
 static void ClearLotteryHistory(HWND hListBox)
 {
-	remove("lotteries.txt");
+	char filename[MAX_PATH];
+
+	sprintf(filename, "%d_w.txt", selectedLottery);
+	remove(filename);
+	sprintf(filename, "lotteries%d.txt", selectedLottery);
+	remove(filename);
+	prepareLotteries();
+	prepareWeight(4);
 	SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
 }
 
@@ -187,7 +193,7 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			//MB_ICONQUESTION | MB_YESNO) == IDYES)
 			{
 				_CrtDumpMemoryLeaks();
-			DestroyWindow(hDlg);
+				DestroyWindow(hDlg);
 			}
 			return TRUE;
 
