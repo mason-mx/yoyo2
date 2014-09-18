@@ -123,7 +123,8 @@ INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				hWndEdit = GetDlgItem(hDlg, IDC_EDIT3);
 				SendMessage(hWndEdit, EM_LIMITTEXT, (WPARAM)1, 0);
 			}
-			return (INT_PTR)TRUE;
+			break;
+			//return (INT_PTR)TRUE;
 		case WM_COMMAND:
 			switch(LOWORD(wParam))
 			{
@@ -134,20 +135,19 @@ INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				case IDCANCEL:
 					EndDialog(hDlg, LOWORD(wParam));
 					return (INT_PTR)TRUE;
+				//case IDC_NUM1:
+				//case IDC_NUM2:
+				//	keybd_event(VK_NUMPAD1, 0, 0, 0);
+				//	keybd_event(VK_NUMPAD1, 0, KEYEVENTF_KEYUP, 0);
+				//	//PostMessage(hDlg,WM_KEYDOWN,'A',0);
+				//	//if(GetFocus()==GetDlgItem(hDlg, IDC_EDIT1))
+				//	{
+				//	//	SetDlgItemText(hDlg,IDC_EDIT1,L"1");
+				//	}
+				//	break;
 			}
 			
 			break;
-		//case WM_CHAR:
-		//case WM_KEYDOWN:
-			//SendDlgItemMessage(hDlg,IDC_EDIT3,WM_SETFOCUS,0,0);
-			//break;
-			//GetDlgItem(hDlg,IDC_EDIT3)->SetFocus();
-			/*if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-			{
-				EndDialog(hDlg, LOWORD(wParam));
-				return (INT_PTR)TRUE;
-			}
-			break;*/
 		
 	}
 
