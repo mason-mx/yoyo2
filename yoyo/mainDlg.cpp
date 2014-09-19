@@ -72,7 +72,7 @@ static int ShowResult(HWND hDlg)
 		j --;
 		if(pNumber[j] == 1)
 		{
-			wsprintf(pRel[j], L"%d : %d", j, numbers[j]);
+			wsprintf(pRel[j], L"%d : %u", j, numbers[j]);
 			SendMessage( hListBox, LB_INSERTSTRING, 0, (LPARAM)pRel[j]);
 		}
 	}
@@ -149,6 +149,10 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				//combos = initCombo();
 				HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
 				ShowLotteryHistory(hListBox);
+				//printf("%d\n",INT_MAX); %d up to 2147483647
+				//printf("%d\n",INT_MIN);
+				//printf("%u\n",UINT_MAX);
+				//printf("%u\n",ULONG_MAX); %u up to 4294967295
 			}
 			prepareWeight(4);
 			return (INT_PTR)TRUE;
