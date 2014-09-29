@@ -110,9 +110,10 @@ static void docombine(int *pArray, COMBO_YOYO* combos, int n, int m)
     top--;//∑µªÿ«∞ª÷∏¥top÷µ
 }
 
-static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
+static double weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 {
 	int combo_n = pcombos.combo_n;
+	double n = 0;
 	switch(combo_n)
 	{
 	case 3:
@@ -121,13 +122,16 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 			{
 			case 0:
 				pcombos.weight *= 2;
+				n = 2;
 				break;
 			case 1:
 				pcombos.weight *= 1;
+				n = 1;
 				break;
 			case 2:
 			case 3:
 				pcombos.weight = 1;
+				n = 0;
 				break;
 			default:
 				break;
@@ -142,24 +146,34 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 				if(pcombos.weight < 1000)
 				{
 					pcombos.weight *= 2;
+					n = 2;
 				}
+				//else if((pcombos.weight >= 8) && (pcombos.weight < 1000))
+				//{
+				//	pcombos.weight *= 1.5;
+				//	n = 1.5;
+				//}
 				else if(pcombos.weight >= 1000)
 				{
 					pcombos.weight *= 1.3;
+					n = 1.3;
 				}
 				break;
 			case 1:
 				if(pcombos.weight < 8)
 				{
 					pcombos.weight *= 2;
+					n = 2;
 				}
-				else if(pcombos.weight >= 8)
+				else if((pcombos.weight >= 8) && (pcombos.weight < 1000))
 				{
 					pcombos.weight *= 1.5;
+					n = 1.5;
 				}
 				else if(pcombos.weight >= 1000)
 				{
 					pcombos.weight *= 1.3;
+					n = 1.3;
 				}
 				break;
 			case 2:
@@ -178,9 +192,11 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 			case 0:
 			case 1:
 				pcombos.weight *= 2;
+				n = 2;
 			case 2:
 			case 3:
 				pcombos.weight  = 1;
+				n = 0;
 				break;
 			default:
 				break;
@@ -195,12 +211,15 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 			case 0:
 			case 1:
 				pcombos.weight *= 2;
+				n = 2;
 				break;
 			case 2:
 				pcombos.weight *= 1;
+				n = 1;
 				break;
 			case 3:
 				pcombos.weight = 1;
+				n = 0;
 				break;
 			default:
 				break;
@@ -215,9 +234,11 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 			case 1:
 			case 2:
 				pcombos.weight *= 2;
+				n = 2;
 				break;
 			case 3:
 				pcombos.weight = 1;	
+				n = 0;
 				break;
 			default:
 				break;
@@ -227,9 +248,9 @@ static int weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 	default:
 		break;
 
-	}	
+	}
 	
-	return 0;
+	return n;
 }
 
 int getCombos()
@@ -318,7 +339,7 @@ int staCombos(int *parray, int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int 
 	int hit = 0;
 	bool skip = false;
 	char filename[MAX_PATH];
-
+	double nn = 0.0;
 	sprintf(filename, "%d_w.txt", selectedLottery);
 
 	FILE *fp;
@@ -389,9 +410,9 @@ int staCombos(int *parray, int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int 
 			}
 		}
 		//printf("]");
-		weightNumber(pcombos[i], numbers, hit);
+		nn = weightNumber(pcombos[i], numbers, hit);
 		if((i == PRINT_N) || (PRINT_N == -1)) printf("%d hit %d | weight:%lf\n", pcombos[i].combo_n, hit, pcombos[i].weight);
-		if(i == PRINT_N) printf("WRITE to >>> weight:%lf\n", pcombos[i].weight);
+		//if(i == PRINT_N) printf("WRITE to >>> weight:%lf\n", pcombos[i].weight);
 		fprintf(fp,"%f",pcombos[i].weight);
 		fprintf(fp,"\n");
 		hit = 0;
