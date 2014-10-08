@@ -6,13 +6,15 @@
 
 extern HINSTANCE hInst;
 extern int selectedLottery;
+COMBO_YOYO *combosF;
+int icombosF = 0;
 
 INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 static int ShowResult(HWND hDlg)
 {
 	TCHAR pRel[NUMBER_TOTAL][RESULT_PATH] = {0};
-	int lotteries[LOTTERIES_ROW][3] = {0};
+	int lotteries[MAX_HISTORY_NUM][3] = {0};
 	int j = NUMBER_TOTAL, total = 0, pEnable[MAX-MIN+1] = {0}, pNumber[NUMBER_TOTAL] = {0};
 
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST2);
@@ -54,7 +56,7 @@ static int ShowResult(HWND hDlg)
 		//printf("%d : %d\r\n",IDC_CHECK3 + i,pEnable[i]);
     }	
 
-	int n = getCombos();
+	//int n = getCombos();
 
 	//YOYO data
 	ULONG *numbers = (ULONG *)malloc(sizeof(ULONG)*NUMBER_TOTAL);
@@ -62,9 +64,9 @@ static int ShowResult(HWND hDlg)
 		numbers[i] = 0;
 	}
 
-	COMBO_YOYO *combos = initCombo();
+	//COMBO_YOYO *combos = initCombo();
 
-	staWeight( pEnable, pNumber, combos, n, numbers);
+	staWeight( pEnable, pNumber, combosF, icombosF, numbers);
 
 
 	while(j >= 0)
@@ -77,22 +79,22 @@ static int ShowResult(HWND hDlg)
 		}
 	}
 
-	for(int i = 0; i < n;i++)
-	{
-		free(combos[i].combo_array);
-	}
-	free(combos);
 	free(numbers);
 	return 1;
 }
 
-static void ShowLotteryHistory(HWND hListBox)
+static int ShowLotteryHistory(HWND hDlg)
 {
-	int lotteries[LOTTERIES_ROW][3] = {0};
-	TCHAR pLotteries[LOTTERIES_ROW][HISTORY_PATH] = {0};
-	int rel = parseLottery(lotteries, pLotteries);
+	int lotteries[MAX_HISTORY_NUM][3] = {0};
+	TCHAR pLotteries[MAX_HISTORY_NUM][HISTORY_PATH] = {0};
+	int rel = 0;
+	HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
+	rel = parseLottery(lotteries, pLotteries);
 	if(rel > 0)
 	{
+		TCHAR combosn[MAX_PATH] = {0};
+		swprintf(combosn,TEXT("當前共%d期："), rel);
+		SetWindowText(GetDlgItem(hDlg, IDC_HISN), combosn);
 		SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
 
 		for (int i = 0 ; i < rel ; i++)
@@ -100,18 +102,32 @@ static void ShowLotteryHistory(HWND hListBox)
 			SendMessage( hListBox, LB_INSERTSTRING, i, (LPARAM)pLotteries[i]);
 		}
 	}
+	return rel;
 }
 
-static void ClearLotteryHistory(HWND hListBox)
+static void ClearLotteryHistory(HWND hDlg)
 {
 	char filename[MAX_PATH];
-
+	HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
 	sprintf(filename, "%d_w.txt", selectedLottery);
+	remove(filename);
+	sprintf(filename, "%d_h.txt", selectedLottery);
+	remove(filename);
+	sprintf(filename, "%d_mnh.txt", selectedLottery);
 	remove(filename);
 	sprintf(filename, "lotteries%d.txt", selectedLottery);
 	remove(filename);
+	for(int i = 0; i < icombosF;i++)
+	{
+		combosF[i].weight = 1.0;
+		combosF[i].nohit = 0;
+	}
 	prepareLotteries();
-	prepareWeight(4);
+	prepareWeight(icombosF);
+	prepareHit(icombosF);
+	prepareMaxNoHit();
+	SetWindowText(GetDlgItem(hDlg, IDC_HISN), L"");
+	SetWindowText(GetDlgItem(hDlg, IDC_ALERT), L"");
 	SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
 }
 
@@ -147,14 +163,26 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 					SendMessage(hCheck, BM_SETCHECK, 1, 0);
 				}
 				//combos = initCombo();
-				HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
-				ShowLotteryHistory(hListBox);
 				//printf("%d\n",INT_MAX); %d up to 2147483647
 				//printf("%d\n",INT_MIN);
 				//printf("%u\n",UINT_MAX);
 				//printf("%u\n",ULONG_MAX); %u up to 4294967295
+				icombosF = getCombos();
+				prepareWeight(icombosF);
+				prepareHit(icombosF);
+				prepareMaxNoHit();
+				combosF = initCombo();
+				ShowLotteryHistory(hDlg);
+				
+				int maxNoHit = parseMaxNoHit();
+				if(ALERT_TH <= maxNoHit)
+				{	
+					TCHAR combosn[MAX_PATH] = {0};
+					swprintf(combosn,TEXT("警告！已有最大%d期不中的情況"), maxNoHit);
+					SetWindowText(GetDlgItem(hDlg, IDC_ALERT), combosn);
+					
+				}
 			}
-			prepareWeight(4);
 			return (INT_PTR)TRUE;
 		case WM_COMMAND:
 			/*if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
@@ -175,19 +203,24 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				case IDC_ADDHIS:
 					if ( IDOK == DialogBox(hInst, MAKEINTRESOURCE(IDD_ADDHIS), hDlg, AddHisDlgProc))
 					{
-						HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
-						ShowLotteryHistory(hListBox);
+						int hisn = ShowLotteryHistory(hDlg);
+						
+						int noHit = staHit(combosF, icombosF);
+						if(parseMaxNoHit() < noHit) saveMaxNoHit(noHit);
+						if(ALERT_TH <= noHit)
+						{	
+							TCHAR combosn[MAX_PATH] = {0};
+							swprintf(combosn,TEXT("警告！已有最大%d期不中的情況"),noHit);
+							SetWindowText(GetDlgItem(hDlg, IDC_ALERT), combosn);
+							
+						}
 					}
 					break;
 				case IDC_STAT:
 					ShowResult(hDlg);
 					break;
 				case IDC_CLEAR:
-					//if ( IDOK == DialogBox(hInst, MAKEINTRESOURCE(IDD_ADDHIS), hDlg, AddHisDlgProc))
-					{
-						HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
-						ClearLotteryHistory(hListBox);						
-					}
+					ClearLotteryHistory(hDlg);						
 					break;
 			}
 			break;
@@ -196,6 +229,11 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 			//if(MessageBox(hDlg, TEXT("Close the program?"), TEXT("Close"),
 			//MB_ICONQUESTION | MB_YESNO) == IDYES)
 			{
+				for(int i = 0; i < icombosF;i++)
+				{
+					free(combosF[i].combo_array);
+				}
+				free(combosF);
 				_CrtDumpMemoryLeaks();
 				DestroyWindow(hDlg);
 			}
