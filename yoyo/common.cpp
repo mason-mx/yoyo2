@@ -706,8 +706,16 @@ static double weightNumber(COMBO_YOYO &pcombos, ULONG *numbers, int hit)
 			{
 			case 0:
 			case 1:
-				pcombos.weight *= 2;
-				n = 2;
+				if(pcombos.weight < 8)
+				{
+					pcombos.weight *= 2;
+					n = 2;
+				}
+				else if(pcombos.weight >= 8)
+				{
+					pcombos.weight *= 1.5;
+					n = 1.5;
+				}
 				break;
 			case 2:
 				pcombos.weight *= 1;
