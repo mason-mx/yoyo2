@@ -15,6 +15,7 @@
 #define IDD_MAINDLG                     129
 #define IDD_ADDHIS                      131
 #define IDD_SELDLG                      132
+#define IDD_ADVANCEDDLG                 133
 #define IDC_ADDHIS                      1004
 #define IDC_CHECK3                      1005
 #define IDC_CHECK4                      1006
@@ -45,6 +46,26 @@
 #define IDC_ALERT                       1026
 #define IDC_YOYO2                       1027
 #define IDC_HISN                        1027
+#define IDC_DAN0                        1029
+#define IDC_DAN1                        1030
+#define IDC_DAN2                        1031
+#define IDC_DAN3                        1032
+#define IDC_DAN4                        1033
+#define IDC_DAN5                        1034
+#define IDC_DAN6                        1035
+#define IDC_DAN7                        1036
+#define IDC_DAN8                        1037
+#define IDC_DAN9                        1038
+#define IDC_TUO0                        1040
+#define IDC_TUO1                        1041
+#define IDC_TUO2                        1042
+#define IDC_TUO3                        1043
+#define IDC_TUO4                        1044
+#define IDC_TUO5                        1045
+#define IDC_TUO6                        1046
+#define IDC_TUO7                        1047
+#define IDC_TUO8                        1048
+#define IDC_TUO9                        1049
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -54,7 +75,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1028
+#define _APS_NEXT_CONTROL_VALUE         1030
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

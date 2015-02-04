@@ -179,6 +179,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\advDlg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\common.cpp"
 				>
 			</File>
@@ -225,7 +229,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Resource.h"
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File

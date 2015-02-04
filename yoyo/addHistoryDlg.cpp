@@ -17,22 +17,7 @@ LRESULT CALLBACK NewEditProc (HWND hwnd, UINT message,WPARAM wParam, LPARAM lPar
 			{
 				//wParam=toupper(wParam);
 				if((wParam < 58) && (wParam > 47))
-					SetFocus(GetDlgItem(GetParent(hwnd), IDC_EDIT2));
-			}
-		break;
-	}
-	return CallWindowProc (g_Edit, hwnd, message, wParam, lParam);
-}
-
-LRESULT CALLBACK New2EditProc (HWND hwnd, UINT message,WPARAM wParam, LPARAM lParam)
-{
-	TCHAR   szString[2];
-	switch (message)
-	{
-		case WM_CHAR:
-			{
-				if((wParam < 58) && (wParam > 47))
-					SetFocus(GetDlgItem(GetParent(hwnd), IDC_EDIT3));
+					SetFocus(GetDlgItem(GetParent(hwnd), GetDlgCtrlID(hwnd)+1));
 			}
 		break;
 	}
@@ -101,7 +86,7 @@ INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 				hWndEdit = GetDlgItem(hDlg, IDC_EDIT2);
 				SendMessage(hWndEdit, EM_LIMITTEXT, (WPARAM)1, 0);
 				//Subclass the Edit control
-				g_Edit = (WNDPROC)SetWindowLong(hWndEdit, GWL_WNDPROC, (LONG)New2EditProc);
+				g_Edit = (WNDPROC)SetWindowLong(hWndEdit, GWL_WNDPROC, (LONG)NewEditProc);
 				hWndEdit = GetDlgItem(hDlg, IDC_EDIT3);
 				SendMessage(hWndEdit, EM_LIMITTEXT, (WPARAM)1, 0);
 			}

@@ -10,6 +10,7 @@ COMBO_YOYO *combosF;
 int icombosF = 0;
 
 INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK AdvDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 static int ShowResult(HWND hDlg)
 {
@@ -80,6 +81,11 @@ static int ShowResult(HWND hDlg)
 	}
 
 	free(numbers);
+
+	if ( IDOK == DialogBox(hInst, MAKEINTRESOURCE(IDD_ADVANCEDDLG), hDlg, AdvDialogProc))
+	{
+		return 1;
+	}
 	return 1;
 }
 

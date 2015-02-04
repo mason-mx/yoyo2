@@ -16,7 +16,7 @@
 #define MAX_HISTORY_NUM 200
 
 #define PRINT_N -1//172//211//213//215//-1 //307
-#define PRINT_COMBOS_WIDTH 4
+#define PRINT_COMBOS_WIDTH 5
 
 #define ALERT_TH 20
 
