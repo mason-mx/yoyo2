@@ -8,6 +8,7 @@ extern HINSTANCE hInst;
 extern int selectedLottery;
 COMBO_YOYO *combosF;
 int icombosF = 0;
+int *NumberFilter;
 
 INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK AdvDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -16,7 +17,7 @@ static int ShowResult(HWND hDlg)
 {
 	TCHAR pRel[NUMBER_TOTAL][RESULT_PATH] = {0};
 	int lotteries[MAX_HISTORY_NUM][3] = {0};
-	int j = NUMBER_TOTAL, total = 0, pEnable[MAX-MIN+1] = {0}, pNumber[NUMBER_TOTAL] = {0};
+	int j = NUMBER_TOTAL, total = 0, pEnable[MAX-MIN+1] = {0};
 
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST2);
 
@@ -52,7 +53,7 @@ static int ShowResult(HWND hDlg)
 		int nChecked = SendMessage(hCheck, BM_GETCHECK, 0, 0);
 		if(nChecked == BST_CHECKED)
 		{
-			pNumber[i] = 1;
+			NumberFilter[i] = 1;
 		}
 		//printf("%d : %d\r\n",IDC_CHECK3 + i,pEnable[i]);
     }	
@@ -67,13 +68,13 @@ static int ShowResult(HWND hDlg)
 
 	//COMBO_YOYO *combos = initCombo();
 
-	staWeight( pEnable, pNumber, combosF, icombosF, numbers);
+	staWeight( pEnable, NumberFilter, combosF, icombosF, numbers);
 
 
 	while(j >= 0)
 	{
 		j --;
-		if(pNumber[j] == 1)
+		if(NumberFilter[j] == 1)
 		{
 			wsprintf(pRel[j], L"%d : %u", j, numbers[j]);
 			SendMessage( hListBox, LB_INSERTSTRING, 0, (LPARAM)pRel[j]);
@@ -173,6 +174,13 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				//printf("%d\n",INT_MIN);
 				//printf("%u\n",UINT_MAX);
 				//printf("%u\n",ULONG_MAX); %u up to 4294967295
+
+				
+				NumberFilter = (int *)malloc(sizeof(int)*NUMBER_TOTAL);
+				for(int i = 0;i<NUMBER_TOTAL;i++){
+					NumberFilter[i] = 0;
+				}
+				
 				icombosF = getCombos();
 				prepareWeight(icombosF);
 				prepareHit(icombosF);
@@ -240,6 +248,7 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 					free(combosF[i].combo_array);
 				}
 				free(combosF);
+				free(NumberFilter);
 				_CrtDumpMemoryLeaks();
 				DestroyWindow(hDlg);
 			}

@@ -3,6 +3,8 @@
 #include "resource.h"
 
 #define NUMBER_TOTAL 10
+#define NUMBER_TOTAL_DAN 6
+#define NUMBER_TOTAL_TUO (NUMBER_TOTAL - NUMBER_TOTAL_DAN)
 #define LOTTERIES_ROW 20
 #define LOTTERIES_COL 3
 
@@ -22,6 +24,8 @@
 
 #define MIN 3
 #define MAX 8
+#define DANTUO_MIN 4
+#define DANTUO_MAX 5
 
 struct COMBO_YOYO
 {

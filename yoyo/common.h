@@ -14,3 +14,6 @@ int staHit(COMBO_YOYO *pcombos, int n);
 int prepareMaxNoHit();
 int saveMaxNoHit(int MaxNoHit);
 int parseMaxNoHit();
+COMBO_YOYO * initDanTuo(int *parray, ULONG *numbers5, ULONG *numbers6);
+int getDanTuoCombos(int iMin, int iMax);
+int staSpecialWeight(int *NumberFilter, COMBO_YOYO *combos, int icombos, COMBO_YOYO *combosAll, int icombosAll, ULONG *numbers5, ULONG *numbers6);

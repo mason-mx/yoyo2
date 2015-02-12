@@ -773,7 +773,7 @@ int getCombos()
 		icombos += temp;
 		printf("=====C(%d, %d) = %d=====\r\n",NUMBER_TOTAL,i,temp);
 	}
-	printf("=====NUMBER_TOTALy %d=====\r\n",icombos);
+	printf("=====NUMBER_TOTALY %d=====\r\n",icombos);
 	return icombos;
 }
 
@@ -1068,7 +1068,7 @@ int staWeight(int *pEnable, int *pNumber, COMBO_YOYO *pcombos, int n, ULONG *num
 		if(skip)
 		{
 			skip = false;
-			printf("skip this\r\n");
+			//printf("skip this\r\n");
 			continue;
 		}
 		
@@ -1196,4 +1196,223 @@ int getImportedHisFile(char *filename)
 	fclose(fp);
 	return 1;
 
+}
+
+int getDanTuoCombos(int iMin, int iMax)
+{
+	int icombos = 0, temp = 0;
+	//Pre-combine to get combos
+	for(int i = iMin;i <= iMax; i ++)
+	{
+		temp = cnm(NUMBER_TOTAL_DAN, i);
+		icombos += temp;
+		printf("=====C(%d, %d) = %d=====\r\n",NUMBER_TOTAL_DAN,i,temp);
+	}
+	printf("=====NUMBER_TOTALY %d=====\r\n",icombos);
+	return icombos*NUMBER_TOTAL_TUO;
+}
+
+int staSpecialWeight(int *NumberFilter, COMBO_YOYO *combos, int icombos, COMBO_YOYO *combosAll, int icombosAll, ULONG *numbers5, ULONG *numbers6)
+{
+	//int hit = 0;
+	bool skip = false;
+
+	for(int i = 0;i<icombos;i++)
+	{
+		int hit = 0;
+		int comboLength = combos[i].combo_n;
+
+		for(int kk = 0;kk<comboLength;kk++)
+		{
+			//if((i == PRINT_N) || (PRINT_N == -1)) printf(" %d", pcombos[i].combo_array[k]);
+			for(int ll = 0;ll<NUMBER_TOTAL;ll++)
+			{
+				if((NumberFilter[ll] == 0) && (ll== combos[i].combo_array[kk]))
+				{
+					//printf("%d ", l);
+					skip = true;
+					break;
+				}
+			}
+		}
+		//if((i == PRINT_N) || (PRINT_N == -1)) printf("]");
+		if(skip)
+		{
+			skip = false;
+			printf("skip this\r\n");
+			continue;
+		}
+		
+		if(5 == comboLength)
+		{
+			int j = 330;
+			for(j = 330;j<582;j++)//Only compare 5: 330-252
+			{
+				for(int k = 0;k<comboLength;k++)
+				{
+					for(int l = 0;l<comboLength;l++)
+					{
+						if(combos[i].combo_array[k] == combosAll[j].combo_array[l])
+						{
+							hit ++;
+						}
+					}
+				}
+				
+				if(hit == comboLength)//All match
+				{
+					printf("555555  %d : %d :%lf\r\n",i, j, combosAll[j].weight);
+					for(int m = 0;m<comboLength;m ++)
+					{
+						numbers5[combos[i].combo_array[m]] += combosAll[j].weight;
+					}
+					break;
+				}
+				hit = 0;
+			}
+		}		
+		else if(6 == comboLength)
+		{
+			int j = 582;
+			for(j = 582;j<792;j++)//Only compare 6: 582-792
+			{
+				for(int k = 0;k<comboLength;k++)
+				{
+					for(int l = 0;l<comboLength;l++)
+					{
+						if(combos[i].combo_array[k] == combosAll[j].combo_array[l])
+						{
+							hit ++;
+						}
+					}
+				}
+				if(hit == comboLength)//All match
+				{
+					printf("666666  %d : %d :%lf\r\n",i, j, combosAll[j].weight);
+					for(int m = 0;m<comboLength;m ++)
+					{
+						numbers6[combos[i].combo_array[m]] += combosAll[j].weight;
+					}
+					break;
+				}
+				hit = 0;
+			}
+		}
+		else
+		{
+			break;
+		}
+    }
+#if 1
+	printf("======Statics======\r\n");
+	for(int i = 0;i<NUMBER_TOTAL;i++){
+		printf("%d : %d\r\n",i,numbers5[i]);
+    }
+	for(int i = 0;i<NUMBER_TOTAL;i++){
+		printf("%d : %d\r\n",i,numbers6[i]);
+    }
+#endif
+#if 0
+	//printf("======4/5======\r\n");
+	for(int i = 0;i<NUMBER_TOTAL;i++){
+		if(numbers[i] > 100)
+		{
+			if(50 <= (numbers[i] - (numbers[i]/100)*100))
+				numbers[i] = (numbers[i]/100 + 1) * 100;
+			else
+				numbers[i] = (numbers[i]/100) * 100;
+		}
+		//printf("%d : %d\r\n",i,numbers[i]);
+    }
+#endif
+	return 0;
+}
+
+COMBO_YOYO * initDanTuo(int *parray, ULONG *numbers5, ULONG *numbers6)
+{
+	int i;
+	int l = 0, j = 4, *combon = (int *)malloc(sizeof(int)*(DANTUO_MAX-DANTUO_MIN+1));
+	int icombos = 0, temp = 0;
+	//double pWeight[COMBOS_N] = {0.0};
+	//int pNoHit[COMBOS_N] = {0};
+
+	top=0;
+	count=0;
+	dst_array=(int *)malloc(sizeof(int)*8);
+
+    //parray=(int *)malloc(sizeof(int)*NUMBER_TOTAL);
+	//Pre-combine to get combos
+	for(i = DANTUO_MIN;i <= DANTUO_MAX; i ++)
+	{
+		temp = cnm(NUMBER_TOTAL_DAN, i);
+		combon[i - DANTUO_MIN] = temp;
+		icombos += temp;
+	}
+
+	//
+	//parseWeight(pWeight);
+	//parseHit(pNoHit);
+	
+	//Do combine to assign destnation array;
+    COMBO_YOYO *combos_temp=(COMBO_YOYO *)malloc(sizeof(COMBO_YOYO)*icombos);
+	for(i = 0;i<icombos;i++)
+	{//初始化数组
+		if(combon[j-DANTUO_MIN] == l)
+		{
+			j ++;
+			l = 0;
+			//printf("%d, %d", i, j);
+		}
+		combos_temp[i].combo_n = j;
+		combos_temp[i].combo_array = (int *)malloc(sizeof(int)*(j+1));
+		//combos[i].weight = pWeight[i];
+		//combos[i].nohit = pNoHit[i];
+		l ++;
+    }
+	
+	for(i = DANTUO_MIN;i <= DANTUO_MAX; i ++)
+	{
+		//precombine(3);
+		docombine(parray, combos_temp, NUMBER_TOTAL_DAN, i);//求数组中所有数的组合
+	}
+
+	COMBO_YOYO *combos=(COMBO_YOYO *)malloc(sizeof(COMBO_YOYO)*(icombos*NUMBER_TOTAL_TUO));
+	l = 0;j = 0;
+	for(i = 0;i<icombos*NUMBER_TOTAL_TUO;i++)
+	{
+		if(NUMBER_TOTAL_TUO == l)
+		{
+			j ++;
+			l = 0;
+		}
+		//memcpy((COMBO_YOYO *)combos[i],(COMBO_YOYO *)combos_temp[j],sizeof(COMBO_YOYO));
+		combos[i].combo_n = combos_temp[j].combo_n + 1;
+		combos[i].combo_array = (int *)malloc(sizeof(int)*(combos[i].combo_n));
+		memcpy(combos[i].combo_array,combos_temp[j].combo_array,sizeof(int)*(combos[i].combo_n - 1));
+		//combos_temp[i].combo_array = (int *)malloc(sizeof(int)*(j+1));
+		//combos[i].weight = pWeight[i];
+		//combos[i].nohit = pNoHit[i];
+		combos[i].combo_array[combos[i].combo_n - 1] = parray[NUMBER_TOTAL_DAN+l];
+		l ++;
+		//j ++;
+    }
+
+#if 0
+	for(i = 0;i<icombos*NUMBER_TOTAL_TUO;i++){
+		printf("%d:", i);
+		for(int k=0;k<combos[i].combo_n;k++) printf("%d ",combos[i].combo_array[k]);
+		printf("@ %d\n", combos[i].combo_n);		
+    }
+#endif
+
+	free(dst_array);
+
+	for(int i = 0; i < icombos;i++)
+	{
+		free(combos_temp[i].combo_array);
+	}
+	free(combos_temp);
+	
+	free(combon);
+	return combos;
 }
