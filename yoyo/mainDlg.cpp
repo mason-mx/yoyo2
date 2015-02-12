@@ -18,6 +18,9 @@ static int ShowResult(HWND hDlg)
 	TCHAR pRel[NUMBER_TOTAL][RESULT_PATH] = {0};
 	int lotteries[MAX_HISTORY_NUM][3] = {0};
 	int j = NUMBER_TOTAL, total = 0, pEnable[MAX-MIN+1] = {0};
+	RECT rectChild;
+	int DlgWidth, DlgHeight;
+	int NewPosX, NewPosY;
 
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST2);
 
@@ -83,6 +86,18 @@ static int ShowResult(HWND hDlg)
 
 	free(numbers);
 
+	if (GetWindowRect(hDlg, &rectChild))   
+	{  
+		DlgWidth    = rectChild.right - rectChild.left;  
+		DlgHeight   = rectChild.bottom - rectChild.top ;  
+		NewPosX     = rectChild.left - (DlgWidth);  
+		NewPosY     = rectChild.top;  
+          
+		if (NewPosX < 0) NewPosX = 0;  
+		if (NewPosY < 0) NewPosY = 0;  
+		SetWindowPos(hDlg, 0, NewPosX, NewPosY,  
+			0, 0, SWP_NOZORDER | SWP_NOSIZE);  
+	}
 	if ( IDOK == DialogBox(hInst, MAKEINTRESOURCE(IDD_ADVANCEDDLG), hDlg, AdvDialogProc))
 	{
 		return 1;
@@ -148,7 +163,6 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				int DlgWidth, DlgHeight;    // 以像素为单位的对话框宽度和高度  
 				int NewPosX, NewPosY;  
 	  
-				// 设法使“关于”对话框居中显示  
 				if (GetWindowRect(hDlg, &rectChild))   
 				{  
 					GetClientRect(GetParent(hDlg), &rectParent);  
@@ -157,7 +171,6 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 					NewPosX     = (DlgWidth) / 2;  
 					NewPosY     = (DlgHeight) / 2;  
 	                  
-					// 如果“关于”框比实际屏幕大  
 					if (NewPosX < 0) NewPosX = 0;  
 					if (NewPosY < 0) NewPosY = 0;  
 					SetWindowPos(hDlg, 0, NewPosX, NewPosY,  

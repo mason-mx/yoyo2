@@ -5,8 +5,6 @@
 #include <crtdbg.h>
 
 extern HINSTANCE hInst;
-COMBO_YOYO *combosDanTuo;
-int icombosDanTuo = 0;
 int icombosAll;
 COMBO_YOYO *combosAll;
 ULONG *numbers5, *numbers6;
@@ -132,10 +130,17 @@ static int ShowDanTuo(HWND hDlg)
 				DanTuo[5],DanTuo[6],DanTuo[7],DanTuo[8],DanTuo[9]);
 	SendMessage( hListBox, LB_INSERTSTRING, 0, (LPARAM)pLotteries);
 
-	icombosDanTuo = getDanTuoCombos(DANTUO_MIN, DANTUO_MAX);
+	COMBO_YOYO *combosDanTuo;
+	int icombosDanTuo = getDanTuoCombos(DANTUO_MIN, DANTUO_MAX);
 	combosDanTuo = initDanTuo(DanTuo,numbers5, numbers6);
-
+	
 	staSpecialWeight(NumberFilter, combosDanTuo, icombosDanTuo, combosAll, icombosAll, numbers5, numbers6);
+	
+	for(int i = 0; i < icombosDanTuo;i++)
+	{
+		free(combosDanTuo[i].combo_array);
+	}
+	free(combosDanTuo);
 
 	return nDanTuo;
 }
@@ -151,22 +156,14 @@ INT_PTR CALLBACK AdvDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	{
 		case WM_INITDIALOG:
 			{
-				RECT rectChild, rectParent;  
-				int DlgWidth, DlgHeight;    // 以像素为单位的对话框宽度和高度  
+				RECT rectParent;
 				int NewPosX, NewPosY;  
 	  
-				// 设法使“关于”对话框居中显示  
-				if (GetWindowRect(hDlg, &rectChild))   
+				if (GetWindowRect(GetParent(hDlg), &rectParent))   
 				{  
-					GetClientRect(GetParent(hDlg), &rectParent);  
-					DlgWidth    = rectChild.right - rectChild.left;  
-					DlgHeight   = rectChild.bottom - rectChild.top ;  
-					NewPosX     = (DlgWidth) / 2;  
-					NewPosY     = (DlgHeight) / 2;  
+					NewPosX     = rectParent.right;
+					NewPosY     = rectParent.top;
 	                  
-					// 如果“关于”框比实际屏幕大  
-					if (NewPosX < 0) NewPosX = 0;  
-					if (NewPosY < 0) NewPosY = 0;  
 					SetWindowPos(hDlg, 0, NewPosX, NewPosY,  
 						0, 0, SWP_NOZORDER | SWP_NOSIZE);  
 				}
@@ -244,11 +241,6 @@ INT_PTR CALLBACK AdvDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			//if(MessageBox(hDlg, TEXT("Close the program?"), TEXT("Close"),
 			//MB_ICONQUESTION | MB_YESNO) == IDYES)
 			{
-				for(int i = 0; i < icombosDanTuo;i++)
-				{
-					free(combosDanTuo[i].combo_array);
-				}
-				free(combosDanTuo);
 				free(numbers5);
 				free(numbers6);
 				for(int i = 0; i < icombosAll;i++)
@@ -256,6 +248,18 @@ INT_PTR CALLBACK AdvDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					free(combosAll[i].combo_array);
 				}
 				free(combosAll);
+
+				RECT rectParent;
+				int NewPosX, NewPosY;  
+	  
+				if (GetWindowRect(GetParent(hDlg), &rectParent))   
+				{  
+					NewPosX     = 350;
+					NewPosY     = rectParent.top;
+	                  
+					SetWindowPos(GetParent(hDlg), 0, NewPosX, NewPosY,  
+						0, 0, SWP_NOZORDER | SWP_NOSIZE);  
+				}
 				//_CrtDumpMemoryLeaks();
 				EndDialog(hDlg, LOWORD(wParam));
 				//DestroyWindow(hDlg);
