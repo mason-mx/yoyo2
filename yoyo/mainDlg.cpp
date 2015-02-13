@@ -9,6 +9,7 @@ extern int selectedLottery;
 COMBO_YOYO *combosF;
 int icombosF = 0;
 int *NumberFilter;
+int savedRectLeft;
 
 INT_PTR CALLBACK AddHisDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK AdvDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -131,6 +132,7 @@ static void ClearLotteryHistory(HWND hDlg)
 {
 	char filename[MAX_PATH];
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
+	HWND hListBox2 = GetDlgItem(hDlg, IDC_LIST2);
 	sprintf(filename, "%d_w.txt", selectedLottery);
 	remove(filename);
 	sprintf(filename, "%d_h.txt", selectedLottery);
@@ -151,6 +153,7 @@ static void ClearLotteryHistory(HWND hDlg)
 	SetWindowText(GetDlgItem(hDlg, IDC_HISN), L"");
 	SetWindowText(GetDlgItem(hDlg, IDC_ALERT), L"");
 	SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
+	SendMessage( hListBox2, LB_RESETCONTENT, 0, 0);
 }
 
 INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -164,7 +167,7 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 				int NewPosX, NewPosY;  
 	  
 				if (GetWindowRect(hDlg, &rectChild))   
-				{  
+				{
 					GetClientRect(GetParent(hDlg), &rectParent);  
 					DlgWidth    = rectChild.right - rectChild.left;  
 					DlgHeight   = rectChild.bottom - rectChild.top ;  
@@ -173,6 +176,7 @@ INT_PTR CALLBACK MainDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 	                  
 					if (NewPosX < 0) NewPosX = 0;  
 					if (NewPosY < 0) NewPosY = 0;  
+					savedRectLeft = NewPosX;
 					SetWindowPos(hDlg, 0, NewPosX, NewPosY,  
 						0, 0, SWP_NOZORDER | SWP_NOSIZE);  
 				}

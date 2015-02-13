@@ -9,6 +9,7 @@ int icombosAll;
 COMBO_YOYO *combosAll;
 ULONG *numbers5, *numbers6;
 extern int *NumberFilter;
+extern int savedRectLeft;
 
 static void HandleDan(HWND hDlg, int ctrl_ID)
 {
@@ -23,6 +24,43 @@ static void HandleDan(HWND hDlg, int ctrl_ID)
 	{
 		SendMessage(hCheck, BM_SETCHECK, 1, 0);
 	}
+	int nDanTuo = 0, nDan = 0, nTuo = 0;
+	int Dan[10] = {0};
+	int DanTuo[10] = {0};
+	for(int i = 0;i<10;i++)
+	{
+		HWND hCheck = GetDlgItem(hDlg, IDC_DAN0+i);
+		int nChecked = SendMessage(hCheck, BM_GETCHECK, 0, 0);		
+		if(nChecked == BST_CHECKED)
+		{
+			Dan[i] = 1;
+			DanTuo[nDanTuo] = i;
+			nDanTuo ++;
+			nDan ++;
+		}
+	}
+	if(nDan == 6)
+	{
+		//Set Tuo
+		for(int i = 0;i<10;i++)
+		{
+			if(0 == Dan[i])
+			{
+				HWND hCheck = GetDlgItem(hDlg, IDC_TUO0+i);
+				SendMessage(hCheck, BM_SETCHECK, 1, 0);
+				DanTuo[nDanTuo] = i;
+				nDanTuo ++;
+			}
+		}
+		
+		TCHAR combosn[MAX_PATH] = {0};
+		swprintf(combosn,TEXT("%d %d %d %d %d %d|%d %d %d %d"),DanTuo[0],DanTuo[1],DanTuo[2],DanTuo[3],DanTuo[4],
+				DanTuo[5],DanTuo[6],DanTuo[7],DanTuo[8],DanTuo[9]);
+		SetWindowText(GetDlgItem(hDlg, IDC_DANTUOTIPS), combosn);
+		
+	}
+	
+	
 	return;
 }
 
@@ -38,6 +76,40 @@ static void HandleTuo(HWND hDlg, int ctrl_ID)
 	else
 	{
 		SendMessage(hCheck, BM_SETCHECK, 1, 0);
+	}
+
+	int nDanTuo = 0, nDan = 0, nTuo = 0;
+	int Tuo[10] = {0};
+	int DanTuo[10] = {0};
+	for(int i = 0;i<10;i++)
+	{
+		HWND hCheck = GetDlgItem(hDlg, IDC_TUO0+i);
+		int nChecked = SendMessage(hCheck, BM_GETCHECK, 0, 0);		
+		if(nChecked == BST_CHECKED)
+		{
+			Tuo[i] = 1;
+			DanTuo[nDanTuo] = i;
+			nDanTuo ++;
+			nTuo ++;
+		}
+	}
+	if(nTuo == 4)
+	{
+		//Set Dan
+		for(int i = 0;i<10;i++)
+		{
+			if(0 == Tuo[i])
+			{
+				HWND hCheck = GetDlgItem(hDlg, IDC_DAN0+i);
+				SendMessage(hCheck, BM_SETCHECK, 1, 0);
+				DanTuo[nDanTuo] = i;
+				nDanTuo ++;
+			}
+		}
+		TCHAR combosn[MAX_PATH] = {0};
+		swprintf(combosn,TEXT("%d %d %d %d %d %d|%d %d %d %d"),DanTuo[4],DanTuo[5],DanTuo[6],DanTuo[7],DanTuo[8],
+				DanTuo[9],DanTuo[0],DanTuo[1],DanTuo[2],DanTuo[3]);
+		SetWindowText(GetDlgItem(hDlg, IDC_DANTUOTIPS), combosn);
 	}
 	return;
 }
@@ -116,13 +188,13 @@ static int ShowDanTuo(HWND hDlg)
 			nTuo ++;
 		}
 	}
-	//if((nDan != 6) || (nTuo != 4))
+	if((nDan != 6) || (nTuo != 4))
 	{
-	//	MessageBox(hDlg, TEXT("請輸入統計條件！"), TEXT("警告"), MB_ICONWARNING | MB_OK);
-	//	return 0;
+		MessageBox(hDlg, TEXT("請輸入統計條件！"), TEXT("警告"), MB_ICONWARNING | MB_OK);
+		return 0;
 	}
 	//for test
-	for(int i=0;i<10;i++) DanTuo[i] = i;
+	//for(int i=0;i<10;i++) DanTuo[i] = i;
 
 	TCHAR pLotteries[RESULT_PATH] = {0};
 	HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
@@ -147,6 +219,18 @@ static int ShowDanTuo(HWND hDlg)
 
 static void ClearDanTuo(HWND hDlg)
 {
+	HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
+	HWND hListBox2 = GetDlgItem(hDlg, IDC_LIST2);
+	for(int i = 0;i<NUMBER_TOTAL;i++){
+		numbers5[i] = 0;
+	}
+
+	for(int i = 0;i<NUMBER_TOTAL;i++){
+		numbers6[i] = 0;
+	}
+	SetWindowText(GetDlgItem(hDlg, IDC_DANTUOTIPS), L"");
+	SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
+	SendMessage( hListBox2, LB_RESETCONTENT, 0, 0);
 	return;
 }
 
@@ -254,7 +338,7 @@ INT_PTR CALLBACK AdvDialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	  
 				if (GetWindowRect(GetParent(hDlg), &rectParent))   
 				{  
-					NewPosX     = 350;
+					NewPosX     = savedRectLeft;
 					NewPosY     = rectParent.top;
 	                  
 					SetWindowPos(GetParent(hDlg), 0, NewPosX, NewPosY,  

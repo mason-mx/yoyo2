@@ -167,6 +167,7 @@ BEGIN
     CONTROL         "9",IDC_TUO9,"Button",BS_AUTOCHECKBOX | BS_PUSHLIKE | WS_TABSTOP,126,34,10,10
     LTEXT           "д▒",IDC_STATIC,13,19,8,8
     LTEXT           "мо",IDC_STATIC,13,35,8,8
+    LTEXT           "",IDC_DANTUOTIPS,21,52,71,8
 END
 
 

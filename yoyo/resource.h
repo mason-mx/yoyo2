@@ -56,6 +56,7 @@
 #define IDC_DAN7                        1036
 #define IDC_DAN8                        1037
 #define IDC_DAN9                        1038
+#define IDC_DANTUOTIPS                  1039
 #define IDC_TUO0                        1040
 #define IDC_TUO1                        1041
 #define IDC_TUO2                        1042
@@ -75,7 +76,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1030
+#define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif
