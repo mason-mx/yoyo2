@@ -59,7 +59,10 @@ static void HandleDan(HWND hDlg, int ctrl_ID)
 		SetWindowText(GetDlgItem(hDlg, IDC_DANTUOTIPS), combosn);
 		
 	}
-	
+	else
+	{
+		SetWindowText(GetDlgItem(hDlg, IDC_DANTUOTIPS), L"");
+	}
 	
 	return;
 }
@@ -111,6 +114,10 @@ static void HandleTuo(HWND hDlg, int ctrl_ID)
 				DanTuo[9],DanTuo[0],DanTuo[1],DanTuo[2],DanTuo[3]);
 		SetWindowText(GetDlgItem(hDlg, IDC_DANTUOTIPS), combosn);
 	}
+	else
+	{
+		SetWindowText(GetDlgItem(hDlg, IDC_DANTUOTIPS), L"");
+	}
 	return;
 }
 
@@ -120,7 +127,15 @@ static int ShowResult(HWND hDlg)
 	int j = NUMBER_TOTAL, total = 0, pEnable[DANTUO_MAX-DANTUO_MIN+1] = {0};
 	ULONG weight;
 	
-	HWND hListBox = GetDlgItem(hDlg, IDC_LIST2);
+	HWND hListBox = GetDlgItem(hDlg, IDC_LIST1);
+
+	if(0 == SendMessage(hListBox, LB_GETCOUNT, 0, 0))
+	{
+		MessageBox(hDlg, TEXT("ÕˆÌí¼ÓÄ‘ÍÏ½MºÏ£¡"), TEXT("¾¯¸æ"), MB_ICONWARNING | MB_OK);
+		return 0;
+	}
+
+	hListBox = GetDlgItem(hDlg, IDC_LIST2);
 
 	SendMessage( hListBox, LB_RESETCONTENT, 0, 0);
 
